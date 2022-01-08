@@ -37,13 +37,13 @@ class Todo {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _todoController = TextEditingController();
-  List<Todo> _todos = [];
+  final _todos = <Todo>[];
 
   void _addTodo() {
     if (_todoController.text != '') {
-      final _todo = Todo(title: _todoController.text, done: false);
+      final todo = Todo(title: _todoController.text, done: false);
       setState(() {
-        _todos.add(_todo);
+        _todos.insert(0, todo);
         _todoController.clear();
       });
     }
@@ -65,41 +65,43 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(top: 15.0, right: 20.0, left: 20.0),
-              child: Text(
-                'What should I do ?',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(right: 20.0, left: 20.0, bottom: 15.0),
-              child: TextField(
-                controller: _todoController,
-                decoration: InputDecoration(icon: Icon(Icons.checklist_sharp)),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                children: [
+                  const SizedBox(height:15),
+                  const Text(
+                    'What should I do ?',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                  ),
+                  TextField(
+                    controller: _todoController,
+                    decoration: const InputDecoration(icon: Icon(Icons.checklist_sharp)),
+                  ),
+                  const SizedBox(height:15),
+                ],
               ),
             ),
             Expanded(
               child: ListView.builder(
                 itemCount: _todos.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final int _reverseIndex = _todos.length - index - 1;
                   return Card(
-                    margin: EdgeInsets.all(10.0),
-                    child: Container(
-                      padding: EdgeInsets.all(20.0),
+                    margin: const EdgeInsets.all(10.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
                       child: Row(
                         children: <Widget>[
                           Checkbox(
-                            value: _todos[_reverseIndex].done,
-                            onChanged: (bool? value) {
+                            value: _todos[index].done,
+                            onChanged: (bool? _) {
                               setState(() {
-                                _todos[_reverseIndex].done = value!;
+                                _todos[index].done = !_todos[index].done;
                               });
                             },
                           ),
                           Text(
-                            _todos[_reverseIndex].title,
-                            style: TextStyle(fontSize: 20),
+                            _todos[index].title,
+                            style: const TextStyle(fontSize: 20),
                           ),
                         ],
                       ),
