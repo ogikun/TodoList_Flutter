@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import 'dart:async';
 
 void main() {
   runApp(const MyApp());
@@ -29,19 +31,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class Todo {
+  String id;
   String title;
   bool done;
 
-  Todo({required this.title, required this.done});
+  Todo({required this.id, required this.title, required this.done});
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _uuid = const Uuid();
   final _todoController = TextEditingController();
   final _todos = <Todo>[];
 
   void _addTodo() {
     if (_todoController.text != '') {
-      final todo = Todo(title: _todoController.text, done: false);
+      final todo = Todo(id: _uuid.v1(), title: _todoController.text, done: false);
       setState(() {
         _todos.insert(0, todo);
         _todoController.clear();
@@ -96,6 +100,14 @@ class _MyHomePageState extends State<MyHomePage> {
                             onChanged: (bool? _) {
                               setState(() {
                                 _todos[index].done = !_todos[index].done;
+                                final Todo todo = _todos[index];
+                                Timer(const Duration(seconds: 3), (){
+                                  setState(() {
+                                    if (todo.done) {
+                                      _todos.removeWhere((Todo t) => t == todo);
+                                    }
+                                  });
+                                });
                               });
                             },
                           ),
