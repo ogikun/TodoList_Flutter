@@ -34,18 +34,20 @@ class Todo {
   String id;
   String title;
   bool done;
+  DateTime createdAt;
 
-  Todo({required this.id, required this.title, required this.done});
+  Todo({required this.id, required this.title, required this.done,required this.createdAt});
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   final _uuid = const Uuid();
   final _todoController = TextEditingController();
   final _todos = <Todo>[];
+  final _timer = <String, Timer>{};
 
   void _addTodo() {
     if (_todoController.text != '') {
-      final todo = Todo(id: _uuid.v1(), title: _todoController.text, done: false);
+      final todo = Todo(id: _uuid.v1(), title: _todoController.text, done: false, createdAt: DateTime.now());
       setState(() {
         _todos.insert(0, todo);
         _todoController.clear();
@@ -90,6 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemCount: _todos.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
+                    color: _todos[index].done ? Colors.grey : Colors.white,
                     margin: const EdgeInsets.all(10.0),
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
@@ -101,13 +104,14 @@ class _MyHomePageState extends State<MyHomePage> {
                               setState(() {
                                 _todos[index].done = !_todos[index].done;
                                 final Todo todo = _todos[index];
-                                Timer(const Duration(seconds: 3), (){
-                                  setState(() {
-                                    if (todo.done) {
+                                _timer[todo.id]?.cancel();
+                                if (todo.done) {
+                                  _timer[todo.id] = Timer(const Duration(seconds: 3), (){
+                                    setState(() {
                                       _todos.removeWhere((Todo t) => t == todo);
-                                    }
+                                    });
                                   });
-                                });
+                                }
                               });
                             },
                           ),
