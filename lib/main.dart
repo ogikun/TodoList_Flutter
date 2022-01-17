@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   const SizedBox(height:15),
                   const Text(
-                    'What should I do ?',
+                    'What should I do?',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
                   ),
                   TextField(
@@ -87,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
+            if (_todos.isEmpty) const Text('I have nothing to do.', style: TextStyle(fontSize: 20)),
             Expanded(
               child: ListView.builder(
                 itemCount: _todos.length,
@@ -96,29 +97,34 @@ class _MyHomePageState extends State<MyHomePage> {
                     margin: const EdgeInsets.all(10.0),
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
-                      child: Row(
-                        children: <Widget>[
-                          Checkbox(
-                            value: _todos[index].done,
-                            onChanged: (bool? _) {
-                              setState(() {
-                                _todos[index].done = !_todos[index].done;
-                                final Todo todo = _todos[index];
-                                _timer[todo.id]?.cancel();
-                                if (todo.done) {
-                                  _timer[todo.id] = Timer(const Duration(seconds: 3), (){
-                                    setState(() {
-                                      _todos.removeWhere((Todo t) => t == todo);
-                                    });
+                      child: Column(
+                        children: <Widget> [
+                          Row(
+                            children: <Widget> [
+                              Checkbox(
+                                value: _todos[index].done,
+                                onChanged: (bool? _) {
+                                  setState(() {
+                                    _todos[index].done = !_todos[index].done;
+                                    final Todo todo = _todos[index];
+                                    _timer[todo.id]?.cancel();
+                                    if (todo.done) {
+                                      _timer[todo.id] = Timer(const Duration(seconds: 3), (){
+                                        setState(() {
+                                          _todos.removeWhere((Todo t) => t == todo);
+                                        });
+                                      });
+                                    }
                                   });
-                                }
-                              });
-                            },
+                                },
+                              ),
+                              Text(
+                                _todos[index].title,
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ],
                           ),
-                          Text(
-                            _todos[index].title,
-                            style: const TextStyle(fontSize: 20),
-                          ),
+                          Text('${_todos[index].createdAt.year}/${_todos[index].createdAt.month}/${_todos[index].createdAt.day}'),
                         ],
                       ),
                     ),
